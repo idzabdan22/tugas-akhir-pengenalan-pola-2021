@@ -3,15 +3,15 @@
 #include <Servo.h>
 
 //Pin Define
-#define LOADCELL_DOUT_PIN  2
-#define LOADCELL_SCK_PIN  3
-#define SERVO_ATAS 11
-#define SERVO_BAWAH 12
-#define S0_CS 6
-#define S1_CS 7
-#define S2_CS 8
-#define S3_CS 9
-#define OUT_CS 5
+#define LOADCELL_DOUT_PIN  3
+#define LOADCELL_SCK_PIN  4
+#define SERVO_ATAS 12
+#define SERVO_BAWAH 2
+#define S0_CS 7
+#define S1_CS 8
+#define S2_CS 9
+#define S3_CS 10
+#define OUT_CS 6
 
 // Class object init
 HX711 scale;
@@ -40,6 +40,7 @@ int blueValue = 0;
 
 byte average = 0;
 char output;
+int i = 0;
 
 byte state = 0;
 static unsigned long t_awal;
@@ -47,31 +48,41 @@ static unsigned long t_setelah;
 static unsigned long treshold = 2000;
 
 void send_data(int red, int green, int blue, int w){
-  delay(1000);
+  delay(500);
   Serial.println('s');
   String data = "";
   data = (String(w) + "," + String(red) + "," + String(green) + "," + String(blue));
-  delay(1000);
+  delay(500);
   Serial.println(data);
-  Serial.flush();
+  while(!(Serial.read() == 'f'));
 }
 
 void reset_all(){
+  lcd.clear();
+  lcd.setCursor(0,0);
   redValue = 0;
   greenValue = 0;
   blueValue = 0;
   myServo_bot.write(90);
   myServo_top.write(00);
+  i = 0;
 }
 
 void process_bottom_servo(char output){   
-  delay(1000);
-  (output == 'K') ? myServo_bot.write(90 - 45) : myServo_bot.write(90 + 45);
+  delay(500);
+  (output == 'S') ? myServo_bot.write(90 - 70) : myServo_bot.write(90 + 70);
   delay(500);
 }
 
+void servo_init(){
+  myServo_bot.attach(2);
+  myServo_top.attach(12);
+  myServo_top.write(00);
+  myServo_bot.write(90);
+}
+
 void process_top_servo(){
-  delay(1000);
+  delay(500);
   myServo_top.write(150);
   delay(500);
   myServo_top.write(00);
@@ -81,8 +92,8 @@ char receive_data(){
   String x;
   char jenis;
   while(!Serial.available());
-  x = Serial.readString();
-  (x == "S") ? jenis = 'S' : jenis = 'K';
+  x = Serial.readStringUntil('\n');
+  (x == "s") ? jenis = 'S' : jenis = 'K';
   return jenis;
 }
 
@@ -116,16 +127,11 @@ void readRGB(){
     greenValue += greenValue;
     blueValue += blueValue;
   }
-  Serial.print("Red = ");
-  Serial.print(redValue/5);
-  Serial.print(" - Green = ");
-  Serial.print(greenValue/5);
-  Serial.print(" - Blue = ");
-  Serial.println(blueValue/5);
 
   redValue /= 5;
   greenValue /= 5;
   blueValue /= 5;
+
 }
 
 int cekWeight(){
@@ -203,9 +209,19 @@ void FSM(){
   t_setelah = millis() - t_awal;
   switch(state){
     case 0:
+      if(i == 0){
+        lcd.print("Put object on");
+        lcd.setCursor(0,1);
+        lcd.print("top of Load Cell");
+        i++;
+      }
       Serial.println("Put object on top of load cell");
-      if(cekWeight() > 2 && t_setelah > treshold * 3){
-        Serial.println("Please dont move object while processing...");
+      if(cekWeight() > 2 && t_setelah > treshold * 4){
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Dont move object");
+        lcd.setCursor(0,1);
+        lcd.print("Processing...");
         state = 1;
         t_awal = millis();   
       }
@@ -213,11 +229,16 @@ void FSM(){
 
     case 1:      
       if(t_setelah > treshold && cekWeight() > 2){
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Weight:");
         Serial.println("Begin reading weight...");
-        Serial.print("Reading weight...");
+        Serial.println("Reading weight...");
         int w = readWeight();
         Serial.print("Weight: ");
-        Serial.print(w);
+        Serial.print(String(w) + "gram");
+        lcd.print(String(w) + " Gram");
+        delay(2000);
         state = 2;
         t_awal = millis();
       }
@@ -225,20 +246,51 @@ void FSM(){
 
     case 2:
       if(t_setelah > treshold && cekWeight() > 2){
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Color:");
         Serial.println("Begin reading color...");
         Serial.println("Reading color...\n");
         Serial.print("Color:\n");
         readRGB();
+        lcd.setCursor(0,1);
+        lcd.print("R:");
+        lcd.print(String(redValue));
+        delay(1000);
+        lcd.print(",G:");
+        lcd.print(String(greenValue));
+        delay(1000);
+        lcd.print(",B:");
+        lcd.print(String(blueValue));
+        delay(3000);
         state = 3;
         t_awal = millis();
       }
       break;
 
     case 3:
-      if(t_setelah > treshold){ 
+      if(t_setelah > treshold){
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Begin Classifica-");
+        lcd.setCursor(0,1);
+        lcd.print("tion...");
         Serial.println("Begin classification...");
         send_data(redValue, greenValue, blueValue, average);
         output = receive_data();
+        if(output == 'S'){
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("Jeruk");
+          lcd.setCursor(0,1);
+          lcd.print("Santang Madu");
+        } else {
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("Jeruk");
+          lcd.setCursor(0,1);
+          lcd.print("Kunci");
+        }
         state = 4;
         t_awal = millis();
       }
@@ -279,6 +331,11 @@ void setup(){
     Serial.println("waiting to start...");
     delay(1000);
   }
+  setup_LCD();
+  lcd.setCursor(0,0);
+  Serial.println("LCD OK...");
+  delay(1000);
+  lcd.print("Setting Up...");
   Serial.println("Setting up...");
   delay(1000);
   setup_loadCell();
@@ -287,13 +344,16 @@ void setup(){
   setup_colorSensor();
   Serial.println("Color Sensor OK...");
   delay(1000);
-  setup_LCD();
-  Serial.println("LCD OK...");
+  servo_init();
+  Serial.println("Servo OK...");
+  delay(1000);
   t_awal = millis();
-  myServo_bot.attach(12);
-  myServo_top.attach(11);
-  myServo_top.write(00);
+  lcd.clear();
+  lcd.print("All set, Ready!");
+  delay(2000);
   Serial.println("All set, Ready!");
+  delay(100);
+  lcd.clear();
 }
 
 void loop(){

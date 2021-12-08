@@ -1,14 +1,11 @@
-import csv
 from re import T
 import time
+from numpy import byte
 import serial
-import sys
 import argparse
 import pandas as pd
 
 from numpy.random.mtrand import uniform
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 from sklearn import *
 
 SERIAL_PORT = "/dev/ttyACM0"
@@ -49,25 +46,34 @@ def process_incoming_data(data):
         arr = arduino_data.split(",")
         for i in range(0, len(arr)):
             arr[i] = int(arr[i])
+        print(arr)
         return knn_classifier(arr, arguments["neighbours"])
     else:
+        print(data)
         while(not data):
-            data = ser.readline()
+            data = ser.readline().decode('ascii')
             pass
         return None 
 
 def knn_classifier(data, neighbours):
-    global indep_data, dep_data
+    global indep_data, dep_data, output
     knn = neighbors.KNeighborsClassifier(n_neighbors=neighbours, weights="uniform")
     knn.fit(indep_data, dep_data)
     predict_knn = knn.predict([data])
     if predict_knn == "Kunci":
-        output = "K" # Kelas Jeruk Kunci
+        time.sleep(1)
+        ser.write(b'f')
+        time.sleep(1)
+        ser.write("k".encode())
+        print("Jeruk Kunci")
     else:
-        output = "S" # Kelas Jeruk Santang Madu
+        time.sleep(1)
+        ser.write(b'f')
+        time.sleep(1)
+        ser.write("s".encode())
+        print("Jeruk S Madu")
     time.sleep(1)
-    ser.write(bytes(output, 'utf-8'))
-
+    
 if __name__ == "__main__":
     read_data()
     time.sleep(2)
