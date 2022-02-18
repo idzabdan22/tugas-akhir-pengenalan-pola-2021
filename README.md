@@ -1,6 +1,6 @@
 # Tugas Akhir Pengenalan Pola 2021
 
-<a href="https://drive.google.com/uc?export=view&id=1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo"><img src="https://drive.google.com/uc?export=view&id=1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
+<a href="https://drive.google.com/uc?export=view&id=1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo"><img src="https://drive.google.com/uc?export=view&id=1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo" style="width: 750px; max-width: 100%; height: auto" title="Click to enlarge picture" />
 
 <!-- ![Youtube Link](https://drive.google.com/file/d/1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo)
 
