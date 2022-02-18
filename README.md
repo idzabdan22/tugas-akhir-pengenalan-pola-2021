@@ -1,7 +1,7 @@
 # Tugas Akhir Pengenalan Pola 2021
 
 <a href="https://drive.google.com/uc?export=view&id=1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo"><img src="https://drive.google.com/uc?export=view&id=1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
-
+<br/>
 [DEMO Video Click Here!](https://www.youtube.com/watch?v=p0su3leJ0DI)
 
 ## Judul: Klasifikasi Jeruk Kunci dan Jeruk Santang Madu Berdasarkan Berat dan Warna menggunakan Metode KNN
