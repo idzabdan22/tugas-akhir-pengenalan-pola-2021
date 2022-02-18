@@ -1,6 +1,6 @@
 # Tugas Akhir Pengenalan Pola 2021
 
-[Video Demonstrasi](https://www.youtube.com/watch?v=p0su3leJ0DI)
+[![IMAGE_ALT](https://drive.google.com/file/d/1cgDqq8PABAwJ-Cv_ieGbjttYfF8TQkfo/view?usp=sharing)](https://www.youtube.com/watch?v=p0su3leJ0DI)
 
 ## Judul: Klasifikasi Jeruk Kunci dan Jeruk Santang Madu Berdasarkan Berat dan Warna menggunakan Metode KNN
 Proses klasifikasi dilakukan dengan input ke serial port dari sensor warna(nilai R,G,B) dan berat di arduino yang kemudian diproses di python dan kembali ke arduino sebagai output dari proses.
