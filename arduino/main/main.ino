@@ -216,7 +216,7 @@ void FSM(){
         i++;
       }
       Serial.println("Put object on top of load cell");
-      if(cekWeight() > 2 && t_setelah > treshold * 4){
+      if(cekWeight() > 2 && t_setelah > treshold * 4){ //need to change the logic here
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("Dont move object");
